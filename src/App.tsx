@@ -15,6 +15,7 @@ import { Progress } from "@/components/ui/progress";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { Upload, Download, FileWarning, XCircle, RefreshCw, FileCog, Info } from "lucide-react";
+import { COUNTRY_MAP } from "./countryMap.generated";
 
 // -------------------------- Types & Constants --------------------------
 
@@ -56,7 +57,9 @@ const CODES = {
   },
 } as const;
 
-const COUNTRY_MAP: Record<string, string> = { Ireland: "IE", Myanmar: "MM", Thailand: "TH" };
+const COUNTRY_LOOKUP = new Map(
+  Object.entries(COUNTRY_MAP).map(([k, v]) => [k.toLowerCase(), v])
+);
 
 const MAX_BYTES = 25 * 1024 * 1024; // 25MB
 const MAX_ROWS = 50000; // data rows (excluding header)
@@ -74,7 +77,7 @@ const normalizeMonth = (s: string) => String(s ?? '').trim();
 const isValidMonth = (s: string) => /^(?:[1-9]|1[0-2])$/.test(normalizeMonth(s));
 const trimTo = (arr: string[], n: number): string[] => Array.from({ length: n }, (_, i) => (arr[i] ?? "").trim());
 const dupKeyOf = (arr: string[]) => arr.map((v) => (v ?? "").trim()).join("\u001F");
-const mapCountry = (name: string) => COUNTRY_MAP[name.trim()] ?? "ZZ";
+const mapCountry = (name: string) => COUNTRY_LOOKUP.get(name.trim().toLowerCase()) ?? "ZZ";
 const buildNewCardId = (digits: string): { value: string; long: boolean } => digits.length > 7 ? { value: `PRF-${digits}`, long: true } : { value: `PRF-${digits.padStart(7, "0")}`, long: false };
 const csvOf = (header: string[], rows: string[][]) => Papa.unparse([header, ...rows], { quotes: true, newline: "\r\n" });
 

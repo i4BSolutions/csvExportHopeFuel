@@ -5,7 +5,9 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
+    "predev": "node scripts/buildCountryMap.mjs",
     "dev": "vite",
+    "prebuild": "node scripts/buildCountryMap.mjs",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview"
@@ -46,6 +48,7 @@
     "tailwindcss-animate": "^1.0.7",
     "typescript": "~5.8.3",
     "typescript-eslint": "^8.39.1",
-    "vite": "^7.1.2"
+    "vite": "^7.1.2",
+    "xlsx": "^0.18.5"
   }
 }

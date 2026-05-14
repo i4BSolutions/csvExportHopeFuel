@@ -17,6 +17,9 @@ vite.config.js
 vite.config.d.ts
 *.tsbuildinfo
 
+# Generated from Country Name Mapping.xlsx by scripts/buildCountryMap.mjs
+src/countryMap.generated.ts
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
