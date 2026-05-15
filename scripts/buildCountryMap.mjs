@@ -1,28 +1,21 @@
 import { readFileSync, writeFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { fileURLToPath } from "node:url";
-import * as XLSX from "xlsx";
 
 const root = resolve(fileURLToPath(import.meta.url), "../..");
-const src = resolve(root, "Country Name Mapping.xlsx");
+const src = resolve(root, "Country_Name_Mapping.json");
 const out = resolve(root, "src/countryMap.generated.ts");
 
-const wb = XLSX.read(readFileSync(src), { type: "buffer" });
-const sheet = wb.Sheets[wb.SheetNames[0]];
-const rows = XLSX.utils.sheet_to_json(sheet, { header: 1, defval: "" });
-
-const [headers, ...body] = rows;
-const countryIdx = headers.findIndex((h) => String(h).trim().toLowerCase() === "country");
-const isoIdx = headers.findIndex((h) => String(h).trim().toLowerCase() === "iso");
-if (countryIdx === -1 || isoIdx === -1) {
-  throw new Error(`Expected 'Country' and 'ISO' headers, got: ${JSON.stringify(headers)}`);
+const rows = JSON.parse(readFileSync(src, "utf8"));
+if (!Array.isArray(rows)) {
+  throw new Error(`Expected ${src} to contain a JSON array of {Country, ISO} objects`);
 }
 
 const entries = [];
 const seen = new Map();
-for (const row of body) {
-  const name = String(row[countryIdx] ?? "").trim();
-  const code = String(row[isoIdx] ?? "").trim().toUpperCase();
+for (const row of rows) {
+  const name = String(row?.Country ?? "").trim();
+  const code = String(row?.ISO ?? "").trim().toUpperCase();
   if (!name || !code) continue;
   const key = name.toLowerCase();
   if (seen.has(key) && seen.get(key) !== code) {
@@ -37,8 +30,8 @@ for (const row of body) {
 entries.sort((a, b) => a[0].localeCompare(b[0]));
 
 const lines = [
-  "// AUTO-GENERATED from Country Name Mapping.xlsx by scripts/buildCountryMap.mjs.",
-  "// Do not edit by hand — edit the xlsx and re-run `npm run build` (or `npm run dev`).",
+  "// AUTO-GENERATED from Country_Name_Mapping.json by scripts/buildCountryMap.mjs.",
+  "// Do not edit by hand — edit the JSON and re-run `npm run build` (or `npm run dev`).",
   "",
   "export const COUNTRY_MAP: Record<string, string> = {",
   ...entries.map(([name, code]) => `  ${JSON.stringify(name)}: ${JSON.stringify(code)},`),

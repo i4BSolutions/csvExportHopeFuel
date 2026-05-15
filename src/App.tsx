@@ -69,8 +69,12 @@ const MAX_ROWS = 50000; // data rows (excluding header)
 const normHeader = (h: string) => h.toLowerCase().replace(/\s+|_/g, "");
 const utcYYYYMMDD = () => { const d = new Date(); return d.getUTCFullYear() + String(d.getUTCMonth() + 1).padStart(2, "0") + String(d.getUTCDate()).padStart(2, "0"); };
 const isValidEmail = (s: string) => /^(?!.{255,})[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(s.trim());
+const ALLOWED_CURRENCIES = new Set([
+  "THB", "MMK", "SGD", "USDT", "USD", "MYR", "DKK", "JPY", "GBP", "EUR",
+  "WON", "AUD", "CAD", "MOP", "NZD", "TWD", "AED", "NOK", "BND", "SEK", "CHF",
+]);
 const normalizeCurrency = (s: string) => s.trim().toUpperCase();
-const isValidCurrency = (s: string) => /^[A-Z]{3}$/.test(normalizeCurrency(s));
+const isValidCurrency = (s: string) => ALLOWED_CURRENCIES.has(normalizeCurrency(s));
 const isValidAmount = (s: string) => /^\d{1,18}(\.\d{1,2})?$/.test(s.trim());
 const isValidISODate = (s: string) => !Number.isNaN(Date.parse(s.trim()));
 const normalizeMonth = (s: string) => String(s ?? '').trim();
